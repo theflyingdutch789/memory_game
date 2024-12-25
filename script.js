@@ -73,9 +73,14 @@ function initGame() {
         dot.classList.remove('correct', 'wrong');
     });
 
-    // Add event listeners to all dots using Pointer Events
+    // Add event listeners to all dots using both pointerdown and click events
     allDots.forEach(dot => {
+        // Remove any existing listeners to prevent duplicates
+        dot.removeEventListener('pointerdown', handleDotClick);
+        dot.removeEventListener('click', handleDotClick);
+
         dot.addEventListener('pointerdown', handleDotClick);
+        dot.addEventListener('click', handleDotClick);
     });
 }
 
@@ -170,12 +175,14 @@ function resetToLayer1() {
     }, 2000);
 }
 
-// Handle dot clicks using Pointer Events
+// Handle dot clicks using Pointer Events and Click Events
 function handleDotClick(event) {
     if (!gameStarted) return; // Ignore interactions before the game starts
 
-    // Ensure the event is initiated by a primary pointer (e.g., left mouse button or touch)
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    // For pointerdown, ensure it's a primary pointer (e.g., left mouse button or touch)
+    if (event.type === 'pointerdown') {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+    }
 
     const layer = parseInt(event.target.dataset.layer);
     const dot = parseInt(event.target.dataset.dot);
@@ -228,6 +235,7 @@ function endGame(won, timeout = false) {
     const allDots = document.querySelectorAll('.dot');
     allDots.forEach(dot => {
         dot.removeEventListener('pointerdown', handleDotClick);
+        dot.removeEventListener('click', handleDotClick);
     });
 
     // Reveal all activation points
@@ -262,6 +270,17 @@ startButton.addEventListener('click', () => {
     activateLayer(currentLayer); // Activate the first layer
     startTimer();
 });
+
+window.addEventListener('orientationchange', () => {
+    // Optionally, reinitialize or adjust the layout
+    // For now, we'll just reinitialize the game to ensure proper layout
+    if (gameStarted) {
+        clearInterval(timer);
+        endGame(false, true); // End the current game
+    }
+});
+
+
 
 // Initialize the game on page load
 window.onload = initGame;
