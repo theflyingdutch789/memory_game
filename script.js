@@ -79,10 +79,10 @@ function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
     const numberOfLayers = endLayer - startLayer + 1;
 
     // Define Layer 3 to always have more than 5 dots (6 or 7)
-    const layer3Dots = Math.floor(Math.random() * 2) + 6; // 6 or 7
+    const layer3Dots = Math.floor(Math.random() * 2) + 5; // 6 or 7
 
     const availableDots = [];
-    for (let i = 3; i <= 7; i++) {
+    for (let i = 3; i <= 6; i++) {
         if (i !== layer3Dots) {
             availableDots.push(i);
         }
