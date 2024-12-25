@@ -8,36 +8,46 @@
 body {
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
+    height: 100vh; /* Ensure body takes full viewport height */
+    overflow: hidden; /* Prevent scrolling */
 }
 
 .game-container {
-    width: 90%;
-    max-width: 1000px; /* Increased width for larger screens */
-    margin: 50px auto;
+    width: 90vw; /* Use viewport width for responsiveness */
+    max-width: 1000px;
+    height: 100vh; /* Full height to handle landscape mode */
+    margin: 0 auto;
+    padding: 2vh 1vw; /* Responsive padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    overflow: hidden; /* Prevent internal scrolling */
 }
 
 h1 {
-    margin-bottom: 20px;
-    font-size: 2em;
+    margin-bottom: 2vh;
+    font-size: 2.5rem; /* Use rem for scalable font */
     color: #333;
 }
 
 #timer {
-    font-size: 1.5em;
-    margin: 20px 0;
+    font-size: 1.5rem;
+    margin: 1vh 0;
     color: #333;
 }
 
 #start-button {
-    padding: 12px 24px;
-    font-size: 1em;
+    padding: 1rem 2rem;
+    font-size: 1rem;
     cursor: pointer;
     background-color: #3498db;
     color: white;
     border: none;
     border-radius: 8px;
     transition: background-color 0.3s, transform 0.2s;
+    margin-bottom: 2vh;
 }
 
 #start-button:hover,
@@ -50,131 +60,209 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: nowrap; /* Prevent wrapping to maintain left-to-right progression */
-    overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
-    margin-top: 30px;
-    padding-bottom: 20px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-top: 3vh;
+    padding-bottom: 2vh;
+    scrollbar-width: none;
+    width: 100%;
+}
+
+#layers-container::-webkit-scrollbar {
+    display: none;
 }
 
 .layer {
-    margin: 0 15px; /* Horizontal spacing between layers */
+    margin: 0 1vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; /* Arrange dots vertically within each layer */
+    flex-direction: column;
+    min-width: 8vw; /* Responsive min-width */
+    flex-shrink: 0; /* Prevent layers from shrinking */
 }
 
 .dot {
-    width: 50px;
-    height: 50px;
-    background-color: #bdc3c7; /* Grayed out */
+    width: 8vw;
+    height: 8vw;
+    max-width: 50px; /* Set max size for larger screens */
+    max-height: 50px;
+    background-color: #bdc3c7;
     border-radius: 50%;
-    margin: 10px 0; /* Vertical spacing between dots */
-    cursor: default; /* Default cursor; will change to pointer when active */
+    margin: 1vh 0;
+    cursor: default;
     transition: background-color 0.3s, transform 0.2s;
 }
 
 .dot.active {
-    cursor: pointer; /* Pointer cursor when active */
+    cursor: pointer;
 }
 
-.dot.active:active {
-    transform: scale(1.1); /* Slight scale on touch/click to indicate interactivity */
+.dot.active:active,
+.dot.active:focus {
+    transform: scale(1.1);
 }
 
 .dot.correct {
-    background-color: #00008b; /* Dark Blue for correct selection */
-    transform: scale(1.2); /* Slightly enlarge to indicate selection */
+    background-color: #00008b;
+    transform: scale(1.2);
 }
 
 .dot.wrong {
-    background-color: #e74c3c; /* Red for wrong selection */
-    transform: scale(1.2); /* Slightly enlarge to indicate selection */
+    background-color: #e74c3c;
+    transform: scale(1.2);
 }
 
 .layer.completed .dot {
-    background-color: #add8e6; /* Light Blue for completed layers */
+    background-color: #add8e6;
     cursor: default;
 }
 
 #message {
-    margin-top: 20px;
-    font-size: 1.2em;
+    margin-top: 2vh;
+    font-size: 1.2rem;
     color: #e74c3c;
-    min-height: 1.2em; /* Maintain space even when empty */
+    min-height: 1.2em;
 }
 
-/* Responsive Design for Mobile Devices */
-@media (max-width: 768px) {
-    .game-container {
-        width: 95%;
-    }
-}
+/* Responsive Design Enhancements */
 
-@media (max-width: 600px) {
-    .dot {
-        width: 40px;
-        height: 40px;
-    }
-
-    #start-button {
-        padding: 10px 20px;
-        font-size: 0.9em;
-    }
-
+/* Tablets and small desktops */
+@media (max-width: 1024px) {
     h1 {
-        font-size: 1.5em;
+        font-size: 2rem;
     }
 
     #timer {
-        font-size: 1.2em;
+        font-size: 1.3rem;
+    }
+
+    #start-button {
+        padding: 0.9rem 1.8rem;
+        font-size: 0.9rem;
+    }
+
+    .dot {
+        width: 7vw;
+        height: 7vw;
     }
 
     .layer {
-        margin: 0 10px;
+        min-width: 7vw;
+        margin: 0 1vw;
     }
 }
 
+/* Portrait Tablets and large phones */
+@media (max-width: 768px) {
+    .game-container {
+        width: 95vw;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    #timer {
+        font-size: 1.2rem;
+    }
+
+    #start-button {
+        padding: 0.8rem 1.6rem;
+        font-size: 0.85rem;
+    }
+
+    .dot {
+        width: 6vw;
+        height: 6vw;
+    }
+
+    .layer {
+        min-width: 6vw;
+        margin: 0 0.8vw;
+    }
+}
+
+/* Small Phones */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.6rem;
+    }
+
+    #timer {
+        font-size: 1.1rem;
+    }
+
+    #start-button {
+        padding: 0.7rem 1.4rem;
+        font-size: 0.8rem;
+    }
+
+    .dot {
+        width: 8vw; /* Increase slightly for better touch targets */
+        height: 8vw;
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    .layer {
+        min-width: 8vw;
+        margin: 0 0.6vw;
+    }
+}
+
+/* Extra Small Phones */
 @media (max-width: 480px) {
-    .dot {
-        width: 35px;
-        height: 35px;
-    }
-
-    #start-button {
-        padding: 8px 16px;
-        font-size: 0.8em;
-    }
-
     h1 {
-        font-size: 1.3em;
+        font-size: 1.4rem;
     }
 
     #timer {
-        font-size: 1em;
+        font-size: 1rem;
     }
 
-    #layers-container {
-        margin-top: 20px;
+    #start-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.75rem;
+    }
+
+    .dot {
+        width: 7vw;
+        height: 7vw;
+        max-width: 35px;
+        max-height: 35px;
+    }
+
+    .layer {
+        min-width: 7vw;
+        margin: 0 2vw;
     }
 }
 
+/* Very Small Phones */
 @media (max-width: 320px) {
-    .dot {
-        width: 30px;
-        height: 30px;
-    }
-
-    #start-button {
-        padding: 6px 12px;
-        font-size: 0.7em;
-    }
-
     h1 {
-        font-size: 1.1em;
+        font-size: 1.2rem;
     }
 
     #timer {
-        font-size: 0.9em;
+        font-size: 0.9rem;
+    }
+
+    #start-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+    }
+
+    .dot {
+        width: 6vw;
+        height: 6vw;
+        max-width: 30px;
+        max-height: 30px;
+    }
+
+    .layer {
+        min-width: 6vw;
+        margin: 0 0.4vw;
     }
 }

@@ -53,6 +53,7 @@ function initGame() {
             dotDiv.classList.add('dot');
             dotDiv.dataset.layer = layer;
             dotDiv.dataset.dot = dot;
+            dotDiv.setAttribute('tabindex', '0'); // Make dots focusable for accessibility
             layerDiv.appendChild(dotDiv);
         }
 
@@ -72,9 +73,9 @@ function initGame() {
         dot.classList.remove('correct', 'wrong');
     });
 
-    // Add event listeners to all dots
+    // Add event listeners to all dots using Pointer Events
     allDots.forEach(dot => {
-        dot.addEventListener('click', handleDotClick);
+        dot.addEventListener('pointerdown', handleDotClick);
     });
 }
 
@@ -82,7 +83,10 @@ function initGame() {
 function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
     const numberOfLayers = endLayer - startLayer + 1;
 
-    // Layer 3 always has 6 dots, so layers 4-5 have unique counts from 3-5
+    // Layer 3 always has 6 dots
+    const layer3Dots = 6;
+
+    // Available dots for Layers 4 and 5 (3-5, excluding layer3Dots)
     const availableDots = [3, 4, 5];
 
     // Shuffle the availableDots array
@@ -93,7 +97,7 @@ function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
 
     // Assign dots to layers 4 and 5
     const uniqueDotCounts = [];
-    for (let layer = startLayer + 1; layer <= endLayer; layer++) { // Layers 4 and 5
+    for (let layer = 4; layer <= endLayer; layer++) { // Layers 4 and 5
         if (availableDots.length > 0) {
             uniqueDotCounts.push(availableDots.pop());
         } else {
@@ -162,9 +166,12 @@ function resetToLayer1() {
     }, 2000);
 }
 
-// Handle dot clicks
+// Handle dot clicks using Pointer Events
 function handleDotClick(event) {
-    if (!gameStarted) return; // Ignore clicks before the game starts
+    if (!gameStarted) return; // Ignore interactions before the game starts
+
+    // Ensure the event is initiated by a primary pointer (e.g., left mouse button or touch)
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
 
     const layer = parseInt(event.target.dataset.layer);
     const dot = parseInt(event.target.dataset.dot);
@@ -216,7 +223,7 @@ function endGame(won, timeout = false) {
     // Remove event listeners
     const allDots = document.querySelectorAll('.dot');
     allDots.forEach(dot => {
-        dot.removeEventListener('click', handleDotClick);
+        dot.removeEventListener('pointerdown', handleDotClick);
     });
 
     // Reveal all activation points
