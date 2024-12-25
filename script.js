@@ -116,6 +116,8 @@ function activateLayer(layer) {
     const dots = layerDiv.querySelectorAll('.dot');
     dots.forEach(dot => {
         dot.classList.add('active');
+        // Ensure the pseudo-element is also interactive
+        dot.style.pointerEvents = 'auto';
     });
 }
 
@@ -125,6 +127,8 @@ function deactivateLayer(layer) {
     const dots = layerDiv.querySelectorAll('.dot');
     dots.forEach(dot => {
         dot.classList.remove('active');
+        // Prevent interaction when inactive
+        dot.style.pointerEvents = 'none';
     });
 }
 

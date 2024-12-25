@@ -83,6 +83,7 @@ h1 {
 }
 
 .dot {
+    position: relative; /* Establish a positioning context for pseudo-element */
     width: 8vw;
     height: 8vw;
     max-width: 50px; /* Set max size for larger screens */
@@ -92,6 +93,20 @@ h1 {
     margin: 1vh 0;
     cursor: default;
     transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Adding a larger invisible touch area */
+.dot::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    /* The transparent background ensures it doesn't interfere visually */
+    background: transparent;
+    /* Ensure the pseudo-element is above the dot for better touch detection */
+    /* If issues arise, consider using z-index */
 }
 
 .dot.active {
@@ -263,6 +278,6 @@ h1 {
 
     .layer {
         min-width: 6vw;
-        margin: 0 0.4vw;
+        margin: 0 1.5vw;
     }
 }
