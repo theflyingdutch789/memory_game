@@ -28,7 +28,7 @@ function initGame() {
     startButton.style.display = 'inline-block'; // Show the Start button
 
     // Generate layers with unique dot counts for layers 3-5
-    const uniqueDotCounts = getUniqueDotCounts(3, 5, 6, 6); // Layer 3: 6-7 dots; Layers 4-5: 3-7 dots, unique, excluding layer 3
+    const uniqueDotCounts = getUniqueDotCounts(3, 5, 3, 5); // Layer 3: 6 dots; Layers 4-5: 3-5 dots, unique, excluding layer 3
 
     for (let layer = 1; layer <= TOTAL_LAYERS; layer++) {
         const layerDiv = document.createElement('div');
@@ -40,7 +40,11 @@ function initGame() {
         if (layer === 1 || layer === 2 || layer === 6 || layer === 7) {
             numDots = 2;
         } else if (layer >= 3 && layer <= 5) {
-            numDots = uniqueDotCounts[layer - 3]; // Assign unique counts for layers 3-5
+            if (layer === 3) {
+                numDots = 6; // Layer 3 always has 6 dots
+            } else {
+                numDots = uniqueDotCounts[layer - 4]; // Assign unique counts for layers 4-5
+            }
         }
 
         // Create dots
@@ -78,15 +82,8 @@ function initGame() {
 function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
     const numberOfLayers = endLayer - startLayer + 1;
 
-    // Define Layer 3 to always have more than 5 dots (6 or 7)
-    const layer3Dots = Math.floor(Math.random() * 2) + 5; // 6 or 7
-
-    const availableDots = [];
-    for (let i = 3; i <= 6; i++) {
-        if (i !== layer3Dots) {
-            availableDots.push(i);
-        }
-    }
+    // Layer 3 always has 6 dots, so layers 4-5 have unique counts from 3-5
+    const availableDots = [3, 4, 5];
 
     // Shuffle the availableDots array
     for (let i = availableDots.length - 1; i > 0; i--) {
@@ -95,17 +92,17 @@ function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
     }
 
     // Assign dots to layers 4 and 5
-    const uniqueDotCounts = [layer3Dots]; // Layer 3's dot count
-    for (let layer = 4; layer <= endLayer; layer++) {
+    const uniqueDotCounts = [];
+    for (let layer = startLayer + 1; layer <= endLayer; layer++) { // Layers 4 and 5
         if (availableDots.length > 0) {
             uniqueDotCounts.push(availableDots.pop());
         } else {
             // If not enough unique counts, fallback to minDots
-            uniqueDotCounts.push(3);
+            uniqueDotCounts.push(minDots);
         }
     }
 
-    return uniqueDotCounts.slice(0, numberOfLayers);
+    return uniqueDotCounts;
 }
 
 // Activate a specific layer (make dots clickable and visually active)

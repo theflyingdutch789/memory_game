@@ -40,7 +40,8 @@ h1 {
     transition: background-color 0.3s, transform 0.2s;
 }
 
-#start-button:hover {
+#start-button:hover,
+#start-button:focus {
     background-color: #2980b9;
     transform: scale(1.05);
 }
@@ -77,8 +78,8 @@ h1 {
     cursor: pointer; /* Pointer cursor when active */
 }
 
-.dot.active:hover {
-    transform: scale(1.1); /* Slight scale on hover to indicate interactivity */
+.dot.active:active {
+    transform: scale(1.1); /* Slight scale on touch/click to indicate interactivity */
 }
 
 .dot.correct {
@@ -104,6 +105,12 @@ h1 {
 }
 
 /* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+    .game-container {
+        width: 95%;
+    }
+}
+
 @media (max-width: 600px) {
     .dot {
         width: 40px;
@@ -122,9 +129,13 @@ h1 {
     #timer {
         font-size: 1.2em;
     }
+
+    .layer {
+        margin: 0 10px;
+    }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 480px) {
     .dot {
         width: 35px;
         height: 35px;
@@ -136,10 +147,34 @@ h1 {
     }
 
     h1 {
-        font-size: 1.2em;
+        font-size: 1.3em;
     }
 
     #timer {
         font-size: 1em;
+    }
+
+    #layers-container {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 320px) {
+    .dot {
+        width: 30px;
+        height: 30px;
+    }
+
+    #start-button {
+        padding: 6px 12px;
+        font-size: 0.7em;
+    }
+
+    h1 {
+        font-size: 1.1em;
+    }
+
+    #timer {
+        font-size: 0.9em;
     }
 }
