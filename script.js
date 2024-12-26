@@ -41,9 +41,12 @@ function initGame() {
 
         // Determine number of dots
         let numDots;
-        if (layer === 1 || layer === 2 || layer === 6 || layer === 7) {
+        if (layer === 1 || layer === 7) {
             numDots = 2;
-        } else if (layer === 3) {
+        } else if (layer === 2 || layer === 6) {
+            numDots = 3;
+        } 
+        else if (layer === 3) {
             numDots = 6; // Layer 3 always has 6 dots
         } else if (layer >= 4 && layer <= 5) {
             numDots = uniqueDotCounts[layer - 4]; // Assign unique counts for layers 4-5
