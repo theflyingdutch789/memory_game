@@ -8,27 +8,26 @@
 body {
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
-    height: 100vh; /* Ensure body takes full viewport height */
-    overflow: hidden; /* Prevent scrolling */
+    min-height: 100vh;
+    overflow: hidden; /* Prevent body scroll */
 }
 
 .game-container {
-    width: 90vw; /* Use viewport width for responsiveness */
-    max-width: 1000px;
-    height: 100vh; /* Full height to handle landscape mode */
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2vh 1vw; /* Responsive padding */
+    padding: 2vh 1vw;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
-    overflow: hidden; /* Prevent internal scrolling */
+    /* overflow: hidden; */ /* Removed to allow content flow */
 }
 
 h1 {
     margin-bottom: 2vh;
-    font-size: 2.5rem; /* Use rem for scalable font */
+    font-size: 2.5rem;
     color: #333;
 }
 
@@ -58,42 +57,42 @@ h1 {
 
 #layers-container {
     display: flex;
-    justify-content: center;
+    flex-wrap: nowrap; /* Prevent wrapping on desktop */
+    justify-content: space-between; /* Evenly distribute layers */
     align-items: center;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    gap: 8px; /* Adjusted gap */
+    overflow-x: hidden; /* Prevent horizontal scroll on desktop */
     margin-top: 3vh;
     padding-bottom: 2vh;
-    scrollbar-width: none;
+    scrollbar-width: none; /* Hide scrollbar in Firefox */
     width: 100%;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    scroll-behavior: smooth; /* Smooth scrolling if needed */
 }
 
 #layers-container::-webkit-scrollbar {
-    display: none;
+    display: none; /* Hide scrollbar in WebKit browsers */
 }
 
 .layer {
-    margin: 0 1vw;
+    flex: 1 1 14%; /* Grow and shrink, base width ~14% */
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    min-width: 8vw; /* Responsive min-width */
-    flex-shrink: 0; /* Prevent layers from shrinking */
+    align-items: center;
+    min-width: 40px; /* Prevent layers from getting too small */
+    flex-shrink: 1; /* Allow layers to shrink */
 }
 
 .dot {
-    position: relative; /* Establish positioning context */
-    z-index: 2; /* Ensure dots are above the pseudo-element */
-    width: 8vw;
-    height: 8vw;
-    max-width: 50px; /* Set max size for larger screens */
-    max-height: 50px;
+    width: 40px;
+    height: 40px;
     background-color: #bdc3c7;
     border-radius: 50%;
     margin: 1vh 0;
-    cursor: default;
+    cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    user-select: none;
 }
 
 .dot::before {
@@ -104,8 +103,8 @@ h1 {
     width: 140%;
     height: 140%;
     background: transparent;
-    pointer-events: none; /* Prevent interception of pointer events */
-    z-index: 1; /* Ensure the pseudo-element is below the dot */
+    pointer-events: none;
+    z-index: 1;
 }
 
 .dot::after {
@@ -120,6 +119,7 @@ h1 {
     transform: translate(-50%, -50%);
     transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
     opacity: 0;
+    pointer-events: none;
 }
 
 .dot:active::after,
@@ -128,7 +128,6 @@ h1 {
     height: 200%;
     opacity: 1;
 }
-
 
 .dot.active {
     cursor: pointer;
@@ -141,12 +140,12 @@ h1 {
 
 .dot.correct {
     background-color: #00008b;
-    transform: scale(1.2);
+    transform: scale(1.1); /* Reduced scale to prevent overflow */
 }
 
 .dot.wrong {
     background-color: #e74c3c;
-    transform: scale(1.2);
+    transform: scale(1.1); /* Reduced scale to prevent overflow */
 }
 
 .layer.completed .dot {
@@ -163,7 +162,24 @@ h1 {
 
 /* Responsive Design Enhancements */
 
-/* Tablets and small desktops */
+/* Very Large Screens */
+@media (min-width: 1600px) {
+    .game-container {
+        width: 70%; /* Reduced width to prevent stretching */
+    }
+
+    .dot {
+        width: 60px;
+        height: 60px;
+    }
+
+    .layer {
+        min-width: 100px;
+        gap: 10px;
+    }
+}
+
+/* Tablets and Small Desktops */
 @media (max-width: 1024px) {
     h1 {
         font-size: 2rem;
@@ -179,20 +195,19 @@ h1 {
     }
 
     .dot {
-        width: 7vw;
-        height: 7vw;
+        width: 35px;
+        height: 35px;
     }
 
     .layer {
-        min-width: 7vw;
-        margin: 0 1vw;
+        min-width: 80px;
     }
 }
 
-/* Portrait Tablets and large phones */
+/* Portrait Tablets and Large Phones */
 @media (max-width: 768px) {
     .game-container {
-        width: 95vw;
+        width: 95%;
     }
 
     h1 {
@@ -209,13 +224,12 @@ h1 {
     }
 
     .dot {
-        width: 6vw;
-        height: 6vw;
+        width: 30px;
+        height: 30px;
     }
 
     .layer {
-        min-width: 6vw;
-        margin: 0 0.8vw;
+        min-width: 70px;
     }
 }
 
@@ -235,15 +249,12 @@ h1 {
     }
 
     .dot {
-        width: 8vw; /* Increase slightly for better touch targets */
-        height: 8vw;
-        max-width: 40px;
-        max-height: 40px;
+        width: 25px;
+        height: 25px;
     }
 
     .layer {
-        min-width: 8vw;
-        margin: 0 0.6vw;
+        min-width: 60px;
     }
 }
 
@@ -263,20 +274,17 @@ h1 {
     }
 
     .dot {
-        width: 7vw;
-        height: 7vw;
-        max-width: 35px;
-        max-height: 35px;
+        width: 20px;
+        height: 20px;
     }
 
     .layer {
-        min-width: 7vw;
-        margin: 0 2vw;
+        min-width: 30px;
     }
 }
 
 /* Very Small Phones */
-@media (max-width: 320px) {
+@media (max-width: 325px) {
     h1 {
         font-size: 1.2rem;
     }
@@ -291,14 +299,11 @@ h1 {
     }
 
     .dot {
-        width: 6vw;
-        height: 6vw;
-        max-width: 30px;
-        max-height: 30px;
+        width: 15px;
+        height: 15px;
     }
 
     .layer {
-        min-width: 6vw;
-        margin: 0 1.5vw;
+        min-width: 25px;
     }
 }

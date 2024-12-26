@@ -27,8 +27,8 @@ function initGame() {
     timerElement.textContent = `Time Left: ${TIME_LIMIT}s`;
     startButton.style.display = 'inline-block'; // Show the Start button
 
-    // Generate layers with unique dot counts for layers 3-5
-    const uniqueDotCounts = getUniqueDotCounts(3, 5, 3, 5); // Layer 3: 6 dots; Layers 4-5: 3-5 dots, unique, excluding layer 3
+    // Generate layers with unique dot counts for layers 4-5
+    const uniqueDotCounts = getUniqueDotCounts(4, 5, 3, 5); // Corrected parameters
 
     for (let layer = 1; layer <= TOTAL_LAYERS; layer++) {
         const layerDiv = document.createElement('div');
@@ -39,12 +39,10 @@ function initGame() {
         let numDots;
         if (layer === 1 || layer === 2 || layer === 6 || layer === 7) {
             numDots = 2;
-        } else if (layer >= 3 && layer <= 5) {
-            if (layer === 3) {
-                numDots = 6; // Layer 3 always has 6 dots
-            } else {
-                numDots = uniqueDotCounts[layer - 4]; // Assign unique counts for layers 4-5
-            }
+        } else if (layer === 3) {
+            numDots = 6; // Layer 3 always has 6 dots
+        } else if (layer >= 4 && layer <= 5) {
+            numDots = uniqueDotCounts[layer - 4]; // Assign unique counts for layers 4-5
         }
 
         // Create dots
@@ -73,13 +71,10 @@ function initGame() {
         dot.classList.remove('correct', 'wrong');
     });
 
-    // Add event listeners to all dots using both pointerdown and click events
+    // Add event listeners to all dots using 'click' only
     allDots.forEach(dot => {
         // Remove any existing listeners to prevent duplicates
-        dot.removeEventListener('pointerdown', handleDotClick);
         dot.removeEventListener('click', handleDotClick);
-
-        dot.addEventListener('pointerdown', handleDotClick);
         dot.addEventListener('click', handleDotClick);
     });
 }
@@ -88,10 +83,7 @@ function initGame() {
 function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
     const numberOfLayers = endLayer - startLayer + 1;
 
-    // Layer 3 always has 6 dots
-    const layer3Dots = 6;
-
-    // Available dots for Layers 4 and 5 (3-5, excluding layer3Dots)
+    // Available dots for Layers 4 and 5 (3-5)
     const availableDots = [3, 4, 5];
 
     // Shuffle the availableDots array
@@ -102,7 +94,7 @@ function getUniqueDotCounts(startLayer, endLayer, minDots, maxDots) {
 
     // Assign dots to layers 4 and 5
     const uniqueDotCounts = [];
-    for (let layer = 4; layer <= endLayer; layer++) { // Layers 4 and 5
+    for (let layer = startLayer; layer <= endLayer; layer++) { // Layers 4 and 5
         if (availableDots.length > 0) {
             uniqueDotCounts.push(availableDots.pop());
         } else {
@@ -175,14 +167,10 @@ function resetToLayer1() {
     }, 2000);
 }
 
-// Handle dot clicks using Pointer Events and Click Events
+// Handle dot clicks using Click Events
 function handleDotClick(event) {
+    console.log('Dot clicked:', event.target); // Debugging statement
     if (!gameStarted) return; // Ignore interactions before the game starts
-
-    // For pointerdown, ensure it's a primary pointer (e.g., left mouse button or touch)
-    if (event.type === 'pointerdown') {
-        if (event.pointerType === 'mouse' && event.button !== 0) return;
-    }
 
     const layer = parseInt(event.target.dataset.layer);
     const dot = parseInt(event.target.dataset.dot);
@@ -234,7 +222,6 @@ function endGame(won, timeout = false) {
     // Remove event listeners
     const allDots = document.querySelectorAll('.dot');
     allDots.forEach(dot => {
-        dot.removeEventListener('pointerdown', handleDotClick);
         dot.removeEventListener('click', handleDotClick);
     });
 
@@ -270,17 +257,6 @@ startButton.addEventListener('click', () => {
     activateLayer(currentLayer); // Activate the first layer
     startTimer();
 });
-
-window.addEventListener('orientationchange', () => {
-    // Optionally, reinitialize or adjust the layout
-    // For now, we'll just reinitialize the game to ensure proper layout
-    if (gameStarted) {
-        clearInterval(timer);
-        endGame(false, true); // End the current game
-    }
-});
-
-
 
 // Initialize the game on page load
 window.onload = initGame;
