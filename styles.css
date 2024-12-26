@@ -5,24 +5,33 @@
     padding: 0;
 }
 
+html, body {
+    height: 100%; /* Ensure the body takes full height */
+}
+
 body {
     background-color: #f0f0f0;
     font-family: Arial, sans-serif;
-    min-height: 100vh;
     overflow: hidden; /* Prevent body scroll */
+}
+
+.outer-container {
+    display: flex;
+    justify-content: center; /* Horizontal centering */
+    align-items: center; /* Vertical centering */
+    height: 100%; /* Full viewport height */
+    width: 100%;
 }
 
 .game-container {
     width: 90%;
     max-width: 1200px;
-    margin: 0 auto;
     padding: 2vh 1vw;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center; /* Center content vertically within game-container */
     align-items: center;
     text-align: center;
-    /* overflow: hidden; */ /* Removed to allow content flow */
 }
 
 h1 {
@@ -37,7 +46,16 @@ h1 {
     color: #333;
 }
 
-#start-button {
+.buttons-container {
+    display: flex;
+    gap: 1rem; /* Space between buttons */
+    margin-bottom: 2vh;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    justify-content: center;
+}
+
+#start-button,
+#how-to-play-button {
     padding: 1rem 2rem;
     font-size: 1rem;
     cursor: pointer;
@@ -45,38 +63,48 @@ h1 {
     color: white;
     border: none;
     border-radius: 8px;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-bottom: 2vh;
+    transition: background-color 0.3s, transform 0.3s, opacity 0.3s;
+    position: relative; /* To manage z-index if needed */
+    z-index: 2; /* Ensure buttons are above layers */
 }
 
 #start-button:hover,
-#start-button:focus {
+#start-button:focus,
+#how-to-play-button:hover,
+#how-to-play-button:focus {
     background-color: #2980b9;
     transform: scale(1.05);
 }
 
+#how-to-play-button {
+    background-color: #2ecc71; /* Different color to distinguish from Start button */
+}
+
+#how-to-play-button:hover,
+#how-to-play-button:focus {
+    background-color: #27ae60;
+}
+
 #layers-container {
     display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping on desktop */
-    justify-content: space-between; /* Evenly distribute layers */
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center; /* Center layers */
     align-items: center;
-    gap: 8px; /* Adjusted gap */
-    overflow-x: hidden; /* Prevent horizontal scroll on desktop */
+    gap: 8px; /* Space between layers */
+    overflow: hidden; /* Prevent horizontal scroll */
     margin-top: 3vh;
     padding-bottom: 2vh;
-    scrollbar-width: none; /* Hide scrollbar in Firefox */
     width: 100%;
     padding-left: 1vw;
     padding-right: 1vw;
-    scroll-behavior: smooth; /* Smooth scrolling if needed */
-}
-
-#layers-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar in WebKit browsers */
+    transition: opacity 0.3s ease;
+    opacity: 1; /* Visible initially */
+    z-index: 1; /* Below the buttons */
+    position: relative;
 }
 
 .layer {
-    flex: 1 1 14%; /* Grow and shrink, base width ~14% */
+    flex: 0 1 14%; /* Prevent layers from growing excessively, base width ~14% */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -85,6 +113,8 @@ h1 {
 }
 
 .dot {
+    position: relative;
+    z-index: 10; /* Highest z-index to ensure dots are on top */
     width: 40px;
     height: 40px;
     background-color: #bdc3c7;
@@ -93,6 +123,13 @@ h1 {
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
     user-select: none;
+    /* Increase touch area without altering visual size */
+    padding: 10px;
+}
+
+.dot::before,
+.dot::after {
+    pointer-events: none; /* Ensure pseudo-elements don't block interactions */
 }
 
 .dot::before {
@@ -103,7 +140,6 @@ h1 {
     width: 140%;
     height: 140%;
     background: transparent;
-    pointer-events: none;
     z-index: 1;
 }
 
@@ -119,7 +155,6 @@ h1 {
     transform: translate(-50%, -50%);
     transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
     opacity: 0;
-    pointer-events: none;
 }
 
 .dot:active::after,
@@ -160,6 +195,106 @@ h1 {
     min-height: 1.2em;
 }
 
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto; /* 5% from the top and centered */
+    padding: 2rem;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px; /* Maximum width */
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-50px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 2rem;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+}
+
+.modal-content h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.modal-content p,
+.modal-content ol {
+    text-align: left;
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.modal-content ol {
+    margin-left: 1.5rem;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        padding: 1.5rem;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .modal-content p,
+    .modal-content ol {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        padding: 1rem;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.3rem;
+    }
+    
+    .modal-content p,
+    .modal-content ol {
+        font-size: 0.8rem;
+    }
+}
+
 /* Responsive Design Enhancements */
 
 /* Very Large Screens */
@@ -189,7 +324,8 @@ h1 {
         font-size: 1.3rem;
     }
 
-    #start-button {
+    #start-button,
+    #how-to-play-button {
         padding: 0.9rem 1.8rem;
         font-size: 0.9rem;
     }
@@ -218,7 +354,8 @@ h1 {
         font-size: 1.2rem;
     }
 
-    #start-button {
+    #start-button,
+    #how-to-play-button {
         padding: 0.8rem 1.6rem;
         font-size: 0.85rem;
     }
@@ -243,18 +380,26 @@ h1 {
         font-size: 1.1rem;
     }
 
-    #start-button {
+    #start-button,
+    #how-to-play-button {
         padding: 0.7rem 1.4rem;
         font-size: 0.8rem;
     }
 
-    .dot {
-        width: 25px;
-        height: 25px;
+    #layers-container {
+        gap: 4px; /* Reduced gap */
+        padding-left: 0.5vw;
+        padding-right: 0.5vw;
     }
 
     .layer {
+        flex: 0 1 12%; /* Reduced flex-basis */
         min-width: 60px;
+    }
+
+    .dot {
+        width: 25px; /* Smaller dots */
+        height: 25px;
     }
 }
 
@@ -268,23 +413,31 @@ h1 {
         font-size: 1rem;
     }
 
-    #start-button {
+    #start-button,
+    #how-to-play-button {
         padding: 0.6rem 1.2rem;
         font-size: 0.75rem;
     }
 
-    .dot {
-        width: 20px;
-        height: 20px;
+    #layers-container {
+        gap: 2px; /* Further reduced gap */
+        padding-left: 0.3vw;
+        padding-right: 0.3vw;
     }
 
     .layer {
-        min-width: 30px;
+        flex: 0 1 10%; /* Further reduced flex-basis */
+        min-width: 50px;
+    }
+
+    .dot {
+        width: 20px; /* Even smaller dots */
+        height: 20px;
     }
 }
 
 /* Very Small Phones */
-@media (max-width: 325px) {
+@media (max-width: 320px) {
     h1 {
         font-size: 1.2rem;
     }
@@ -293,17 +446,38 @@ h1 {
         font-size: 0.9rem;
     }
 
-    #start-button {
+    #start-button,
+    #how-to-play-button {
         padding: 0.5rem 1rem;
         font-size: 0.7rem;
     }
 
-    .dot {
-        width: 15px;
-        height: 15px;
+    #layers-container {
+        gap: 1px; /* Minimal gap */
+        padding-left: 0.2vw;
+        padding-right: 0.2vw;
     }
 
     .layer {
-        min-width: 25px;
+        flex: 0 1 8%; /* Reduced flex-basis */
+        min-width: 40px;
     }
+
+    .dot {
+        width: 15px; /* Minimal dots */
+        height: 15px;
+    }
+}
+
+/* Existing CSS... */
+
+/* Restart Button Styles */
+.restart-button {
+    background-color: #e74c3c; /* Red background */
+}
+
+.restart-button:hover,
+.restart-button:focus {
+    background-color: #c0392b; /* Darker red on hover/focus */
+    transform: scale(1.05); /* Slightly enlarge on hover/focus */
 }

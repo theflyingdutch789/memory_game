@@ -5,7 +5,7 @@ const TIME_LIMIT = 40; // seconds
 // Game State
 let currentLayer = 1;
 let activationPoints = {}; // Stores the active dot index for each layer
-let timer;
+let timer = null; // Initialize timer as null
 let timeLeft = TIME_LIMIT;
 let gameStarted = false;
 
@@ -14,18 +14,22 @@ const layersContainer = document.getElementById('layers-container');
 const timerElement = document.getElementById('timer');
 const messageElement = document.getElementById('message');
 const startButton = document.getElementById('start-button');
+const howToPlayButton = document.getElementById('how-to-play-button');
+const modal = document.getElementById('how-to-play-modal');
+const closeModalButton = document.getElementById('close-modal');
 
-// Initialize the game
+// Initialize the game (on page load)
 function initGame() {
     // Reset game state
     currentLayer = 1;
     activationPoints = {};
-    timeLeft = TIME_LIMIT;
+    timeLeft = TIME_LIMIT; // Reset timeLeft to TIME_LIMIT
     messageElement.textContent = '';
     layersContainer.innerHTML = '';
+    timerElement.textContent = `Time Left: ${timeLeft}s`; // Update timer display
     gameStarted = false;
-    timerElement.textContent = `Time Left: ${TIME_LIMIT}s`;
-    startButton.style.display = 'inline-block'; // Show the Start button
+    startButton.textContent = 'Start Game'; // Ensure button says 'Start Game'
+    startButton.classList.remove('restart-button'); // Remove 'restart-button' styles
 
     // Generate layers with unique dot counts for layers 4-5
     const uniqueDotCounts = getUniqueDotCounts(4, 5, 3, 5); // Corrected parameters
@@ -52,6 +56,8 @@ function initGame() {
             dotDiv.dataset.layer = layer;
             dotDiv.dataset.dot = dot;
             dotDiv.setAttribute('tabindex', '0'); // Make dots focusable for accessibility
+            dotDiv.setAttribute('role', 'button'); // ARIA role
+            dotDiv.setAttribute('aria-label', `Dot ${dot} in Layer ${layer}`); // ARIA label
             layerDiv.appendChild(dotDiv);
         }
 
@@ -205,6 +211,7 @@ function startTimer() {
     timerElement.textContent = `Time Left: ${timeLeft}s`;
     timer = setInterval(() => {
         timeLeft--;
+        if (timeLeft < 0) timeLeft = 0; // Prevent negative time
         timerElement.textContent = `Time Left: ${timeLeft}s`;
 
         if (timeLeft <= 0) {
@@ -214,9 +221,10 @@ function startTimer() {
     }, 1000);
 }
 
+
 // End the game
 function endGame(won, timeout = false) {
-    clearInterval(timer);
+    clearInterval(timer); // Clear the timer to prevent it from running in the background
     gameStarted = false;
 
     // Remove event listeners
@@ -242,20 +250,82 @@ function endGame(won, timeout = false) {
         messageElement.textContent = 'Time\'s up! You failed to complete the game.';
     }
 
-    // Show the Start button again after the game ends
-    setTimeout(() => {
-        initGame();
-    }, 3000);
+    // Keep the Restart button as is (already styled with red background)
+    // No additional changes needed here
 }
 
 // Handle Start button click
 startButton.addEventListener('click', () => {
-    if (gameStarted) return; // Prevent multiple starts
-    gameStarted = true;
-    messageElement.textContent = '';
-    startButton.style.display = 'none'; // Hide the Start button during the game
-    activateLayer(currentLayer); // Activate the first layer
-    startTimer();
+    if (!gameStarted) {
+        // Start the game
+        gameStarted = true;
+        messageElement.textContent = '';
+
+        // Change button to 'Restart' with red background
+        startButton.textContent = 'Restart';
+        startButton.classList.add('restart-button'); // add a class for red background
+
+        // Reset timer
+        clearInterval(timer);
+        timeLeft = TIME_LIMIT; // Reset timeLeft to TIME_LIMIT
+        timerElement.textContent = `Time Left: ${timeLeft}s`; // Update the timer display
+
+        // Activate the first layer
+        activateLayer(currentLayer);
+
+        // Start the timer
+        startTimer();
+    } else {
+        // Restart the game
+        // Reset game state
+        clearInterval(timer);
+        timeLeft = TIME_LIMIT; // Reset timeLeft to TIME_LIMIT
+        timerElement.textContent = `Time Left: ${timeLeft}s`; // Update the timer display
+
+        // Re-initialize the game
+        initGame();
+
+        // Ensure the button remains as 'Restart' with red background
+        startButton.textContent = 'Restart';
+        startButton.classList.add('restart-button'); // Ensure it's red
+
+        // Set gameStarted to true
+        gameStarted = true;
+
+        // Activate the first layer
+        activateLayer(currentLayer);
+
+        // Start the timer
+        startTimer();
+    }
+});
+
+// Handle "How to Play" button click to open the modal
+howToPlayButton.addEventListener('click', () => {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling when modal is open
+});
+
+// Handle modal close button click
+closeModalButton.addEventListener('click', () => {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore background scrolling
+});
+
+// Handle clicks outside the modal content to close the modal
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore background scrolling
+    }
+});
+
+// Close modal on pressing the Esc key
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.style.display === 'flex') {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore background scrolling
+    }
 });
 
 // Initialize the game on page load
